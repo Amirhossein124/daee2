@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جستجوی مشتری</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; direction: rtl; }
+        input, button { margin: 5px; padding: 10px; }
+        table { width: 50%; margin: auto; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 10px; }
+        #adminSection { display: none; }
+    </style>
+</head>
+<body>
+    <h2>جستجوی نام و امتیاز مشتری</h2>
+    <input type="text" id="customerCode" placeholder="کد مشتری را وارد کنید">
+    <button onclick="searchCustomer()">جستجو</button>
+    <p id="result"></p>
+
+    <h3>ورود مدیر</h3>
+    <input type="password" id="adminPassword" placeholder="رمز عبور مدیر">
+    <button onclick="checkAdmin()">ورود</button>
+
+    <div id="adminSection">
+        <h3>افزودن/ویرایش مشتری</h3>
+        <input type="text" id="newCode" placeholder="کد جدید">
+        <input type="text" id="newName" placeholder="نام مشتری">
+        <input type="number" id="newScore" placeholder="امتیاز">
+        <button onclick="addOrUpdateCustomer()">ذخیره</button>
+
+        <h3>لیست مشتریان</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>کد</th>
+                    <th>نام</th>
+                    <th>امتیاز</th>
+                </tr>
+            </thead>
+            <tbody id="customerTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let customers = JSON.parse(localStorage.getItem("customers")) || {};
+        displayCustomers();
+
+        function searchCustomer() {
+            let code = document.getElementById("customerCode").value;
+            if (customers[code]) {
+                document.getElementById("result").innerText = `نام: ${customers[code].name}, امتیاز: ${customers[code].score}`;
+            } else {
+                document.getElementById("result").innerText = "مشتری یافت نشد";
+            }
+        }
+
+        function checkAdmin() {
+            let password = document.getElementById("adminPassword").value;
+            if (password === "as00") { // رمز عبور خود را تغییر دهید
+                document.getElementById("adminSection").style.display = "block";
+            } else {
+                alert("رمز عبور اشتباه است!");
+            }
+        }
+
+        function addOrUpdateCustomer() {
+            let code = document.getElementById("newCode").value;
+            let name = document.getElementById("newName").value;
+            let score = document.getElementById("newScore").value;
+            
+            if (code && name && score) {
+                customers[code] = { name, score };
+                localStorage.setItem("customers", JSON.stringify(customers));
+                alert("اطلاعات ذخیره شد!");
+                displayCustomers();
+            } else {
+                alert("لطفاً تمام فیلدها را پر کنید");
+            }
+        }
+        
+        function displayCustomers() {
+            let tableBody = document.getElementById("customerTable");
+            tableBody.innerHTML = "";
+            for (let code in customers) {
+                let row = `<tr><td>${code}</td><td>${customers[code].name}</td><td>${customers[code].score}</td></tr>`;
+                tableBody.innerHTML += row;
+            }
+        }
+    </script>
+</body>
+</html>
